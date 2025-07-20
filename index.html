@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PayMent</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <form id="paymentForm">
+    <label>Card Number:</label>
+    <input type="text" placeholder="Cardnum..." id="cardnum"/>
+    <br />
+    <label>Card Validation:</label>
+    <input type="text" placeholder="Card end" id="cardend" />
+    <br />
+    <div id="errorDiv" style="color:red;"></div>
+    <button type="submit" id="submitBtn">Pay</button>
+  </form>
+
+  <script>
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+    tg.expand();
+
+    const cardNum = document.getElementById('cardnum');
+    const cardEnd = document.getElementById('cardend');
+    const errorDiv = document.getElementById('errorDiv');
+    const form = document.getElementById('paymentForm');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // MainButton sozlash
+    tg.MainButton.setText("Buy");
+    tg.MainButton.disable();
+
+    // Inputlar o'zgarganda holatni tekshirish
+    function checkInputs() {
+      const card = cardNum.value.trim();
+      const end = cardEnd.value.trim();
+
+      if (card && end) {
+        tg.MainButton.enable();
+        submitBtn.disabled = false;
+      } else {
+        tg.MainButton.disable();
+        submitBtn.disabled = true;
+      }
+    }
+
+    cardNum.addEventListener('input', checkInputs);
+    cardEnd.addEventListener('input', checkInputs);
+
+    // Submit funksiyasi
+    function submitForm() {
+      const cardnum = cardNum.value.trim();
+      const cardend = cardEnd.value.trim();
+
+      if (!cardnum || !cardend) {
+        errorDiv.textContent = "All fields are required.";
+        return;
+      }
+
+      tg.sendData(JSON.stringify({
+        cardnum: cardnum,
+        cardend: cardend
+      }));
+
+      tg.close();
+    }
+
+    // Form submit hodisasi
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      submitForm();
+    });
+
+    // Main button bosilganda
+    tg.MainButton.onClick(submitForm);
+
+    // Boshlanishida submit tugmasini o‘chirib qo‘yamiz
+    submitBtn.disabled = true;
+  </script>
+</body>
+</html>
